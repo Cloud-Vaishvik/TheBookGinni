@@ -7,7 +7,7 @@
 <meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PsycheAI — Psychology Book Assistant</title>
-<!-- PsycheAI v5.0 | Google Gemini 2.5 Flash | March 2026 -->
+<!-- PsycheAI v6.0 | Google Gemini 2.5 Flash | Smart Multi-Book Search | March 2026 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -426,22 +426,104 @@ const ta=document.getElementById('q-input');
 ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,130)+'px';});
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
 
+// ── Smart relevance search across ALL books ────────────────────────────────────
+// Splits each book into chunks, scores each chunk against the question keywords,
+// picks the top-scoring chunks from EVERY book so all 12 books are represented.
+function buildSmartContext(question, books) {
+  const CHUNK_SIZE   = 1500;   // chars per chunk (~375 tokens)
+  const CHUNKS_PER_BOOK = 8;   // top chunks taken from each book
+  const MAX_CTX      = 700000; // total char budget (~175k tokens, well within 1M)
+
+  // Extract keywords from question (ignore stop words)
+  const stopWords = new Set(['what','is','the','a','an','of','in','how','does','do','are','was','were','be','been','being','have','has','had','that','this','with','for','on','at','by','from','to','and','or','but','not','it','its','as','so','if','which','who','when','where','why','can','could','would','should','will','their','there','about','explain','describe','define','tell','me']);
+  const keywords = question.toLowerCase()
+    .replace(/[^a-z0-9\s]/g,'')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopWords.has(w));
+
+  // Score a text chunk: count keyword hits (with bonus for multiple hits of same word)
+  function scoreChunk(text) {
+    const lower = text.toLowerCase();
+    let score = 0;
+    for (const kw of keywords) {
+      let pos = 0, hits = 0;
+      while ((pos = lower.indexOf(kw, pos)) !== -1) { hits++; pos += kw.length; }
+      score += hits > 0 ? 1 + Math.log(hits) : 0;
+    }
+    return score;
+  }
+
+  const allChunks = []; // {bookName, chunk, score}
+
+  for (const book of books) {
+    const text   = book.text;
+    const chunks = [];
+    // Split into overlapping chunks (50% overlap so context isn't cut mid-sentence)
+    for (let i = 0; i < text.length; i += Math.floor(CHUNK_SIZE / 2)) {
+      const chunk = text.slice(i, i + CHUNK_SIZE);
+      if (chunk.trim().length > 100) chunks.push(chunk);
+    }
+    // Score and sort chunks for this book
+    const scored = chunks.map(c => ({ bookName: book.name, chunk: c, score: scoreChunk(c) }));
+    scored.sort((a, b) => b.score - a.score);
+    // Take top N chunks from this book (always include at least 1 even if score=0)
+    const top = scored.slice(0, CHUNKS_PER_BOOK).filter((c,i) => i===0 || c.score > 0);
+    allChunks.push(...top);
+  }
+
+  // Sort all collected chunks by score globally
+  allChunks.sort((a, b) => b.score - a.score);
+
+  // Build context respecting char budget — ensure every book that scored > 0 appears
+  let ctx = '';
+  const used = new Set();
+  const usedList = [];
+
+  // First pass: include at least 1 chunk per book that has any relevant content
+  for (const book of books) {
+    const bookChunks = allChunks.filter(c => c.bookName === book.name && c.score > 0);
+    if (bookChunks.length === 0) continue;
+    const header = `\n\n=== SOURCE: ${book.name} ===\n`;
+    const body   = bookChunks[0].chunk;
+    if (ctx.length + header.length + body.length <= MAX_CTX) {
+      ctx += header + body;
+      used.add(book.name);
+      usedList.push(book.name);
+    }
+  }
+
+  // Second pass: fill remaining budget with highest-scoring chunks from any book
+  for (const item of allChunks) {
+    if (ctx.length >= MAX_CTX) break;
+    if (item.score === 0) break; // no point including zero-score chunks
+    const sep = `\n\n--- (more from: ${item.bookName}) ---\n`;
+    if (ctx.length + sep.length + item.chunk.length <= MAX_CTX) {
+      ctx += sep + item.chunk;
+      if (!used.has(item.bookName)) { used.add(item.bookName); usedList.push(item.bookName); }
+    }
+  }
+
+  // Fallback: if nothing scored (very generic question), take a sample from every book
+  if (usedList.length === 0) {
+    const PER_BOOK = Math.floor(MAX_CTX / books.length);
+    for (const book of books) {
+      const header = `\n\n=== SOURCE: ${book.name} ===\n`;
+      const body   = book.text.slice(0, PER_BOOK - header.length);
+      ctx += header + body;
+      usedList.push(book.name);
+    }
+  }
+
+  return { ctx, used: usedList };
+}
+
 async function send(){
   const question=ta.value.trim();
   const ready=S.books.filter(b=>b.status==='ready');
   if(!question||S.loading||!ready.length)return;
 
-  // Gemini has 1M token window — use up to 500k chars
-  const MAX=500000; let ctx=''; const used=[];
-  for(const b of ready){
-    const blk=`\n\n=== SOURCE: ${b.name} ===\n${b.text}`;
-    if(ctx.length+blk.length<=MAX){ctx+=blk;used.push(b.name);}
-    else{
-      const rem=MAX-ctx.length;
-      if(rem>5000){ctx+=`\n\n=== SOURCE: ${b.name} (partial) ===\n${b.text.slice(0,rem-200)}`;used.push(b.name+' (partial)');}
-      break;
-    }
-  }
+  // Smart context: relevant chunks from ALL books
+  const { ctx, used } = buildSmartContext(question, ready);
 
   S.loading=true;
   document.getElementById('send-btn').disabled=true;
