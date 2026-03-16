@@ -431,11 +431,12 @@ body {
     <div class="model-pill">
       Model:&nbsp;
       <select id="model-select" onchange="onModelChange()" style="background:transparent;border:none;outline:none;color:var(--accent);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;cursor:pointer;">
-        <option value="llama-3.3-70b-versatile"  selected>LLaMA 3.3 70B ★</option>
+        <option value="meta-llama/llama-4-maverick-17b-128e-instruct" selected>Llama 4 Maverick ★ (Latest)</option>
+        <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (Fast)</option>
+        <option value="llama-3.3-70b-versatile">LLaMA 3.3 70B</option>
         <option value="llama-3.1-70b-versatile">LLaMA 3.1 70B</option>
-        <option value="llama-3.1-8b-instant">LLaMA 3.1 8B (Fast)</option>
-        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-        <option value="gemma2-9b-it">Gemma 2 9B</option>
+        <option value="llama-3.1-8b-instant">LLaMA 3.1 8B (Fastest)</option>
+        <option value="qwen-qwq-32b">Qwen QwQ 32B (Reasoning)</option>
         <option value="custom">Custom model ID…</option>
       </select>
       &nbsp;· Groq
@@ -468,7 +469,7 @@ body {
         <!-- Custom model input (shown only when Custom is selected) -->
         <div id="custom-model-wrap" style="display:none;margin-top:8px;">
           <div class="key-input-wrap">
-            <input type="text" id="custom-model-input" placeholder="e.g. llama-3.3-70b-versatile"
+            <input type="text" id="custom-model-input" placeholder="e.g. meta-llama/llama-4-maverick-17b-128e-instruct"
               autocomplete="off" spellcheck="false"
               style="font-size:11.5px;"
               oninput="updateCustomModel()"/>
@@ -533,7 +534,7 @@ body {
       <div class="welcome" id="welcome">
         <span class="welcome-glyph">🧠</span>
         <h2>Psychology Book AI</h2>
-        <div class="powered-by">Powered by <strong>LLaMA 3.3 70B</strong> via Groq · Free & Open Source</div>
+        <div class="powered-by">Powered by <strong>Llama 4 Maverick</strong> via Groq · Free & Open Source</div>
         <p>Upload your psychology books, then ask any question.<br>
         Every answer is <strong style="color:var(--accent);">strictly grounded</strong> in your uploaded texts — no hallucination, no external knowledge.</p>
         <div class="suggestions">
@@ -573,7 +574,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ── State ──────────────────────────────────────────────────────────────────────
-const S = { books: [], history: [], loading: false, groqKey: '', serverOk: false, model: 'llama-3.3-70b-versatile' };
+const S = { books: [], history: [], loading: false, groqKey: '', serverOk: false, model: 'meta-llama/llama-4-maverick-17b-128e-instruct' };
 
 function getModel() { return S.model; }
 
@@ -582,7 +583,7 @@ function onModelChange() {
   const wrap = document.getElementById('custom-model-wrap');
   if (sel === 'custom') {
     wrap.style.display = 'block';
-    S.model = document.getElementById('custom-model-input').value.trim() || 'llama-3.3-70b-versatile';
+    S.model = document.getElementById('custom-model-input').value.trim() || 'meta-llama/llama-4-maverick-17b-128e-instruct';
   } else {
     wrap.style.display = 'none';
     S.model = sel;
@@ -591,7 +592,7 @@ function onModelChange() {
 
 function updateCustomModel() {
   const val = document.getElementById('custom-model-input').value.trim();
-  S.model = val || 'llama-3.3-70b-versatile';
+  S.model = val || 'meta-llama/llama-4-maverick-17b-128e-instruct';
 }
 
 // ── Server health check ────────────────────────────────────────────────────────
@@ -783,7 +784,7 @@ function clearChat() {
   w.innerHTML=`
     <span class="welcome-glyph">🧠</span>
     <h2>Psychology Book AI</h2>
-    <div class="powered-by">Powered by <strong>LLaMA 3.3 70B</strong> via Groq · Free & Open Source</div>
+    <div class="powered-by">Powered by <strong>Llama 4 Maverick</strong> via Groq · Free & Open Source</div>
     <p>Upload your psychology books, then ask any question.<br>
     Every answer is <strong style="color:var(--accent);">strictly grounded</strong> in your uploaded texts — no hallucination.</p>
     <div class="suggestions">
