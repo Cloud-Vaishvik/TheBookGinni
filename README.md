@@ -1,28 +1,28 @@
-# 🧠 PsycheAI — Psychology Book Assistant
+# 🧠 PsycheAI v5.0 — Google Gemini Edition
 
-Powered by **Llama 4 Maverick** via Groq — the latest & most capable free model.
+Powered by **Google Gemini 2.5 Flash** — stable, free, generous limits.
 
-## What's new in this version
-- ✅ Upgraded to Meta's **Llama 4 Maverick** (latest, lowest latency on Groq)
-- ✅ Added Llama 4 Scout as fast alternative
-- ✅ Added Qwen QwQ 32B reasoning model option
-- ✅ Model selector dropdown — switch without editing code
-- ✅ "Custom model ID" option for future-proofing
+## Why Gemini instead of Groq?
+| | Groq (old) | Google Gemini (new) |
+|--|--|--|
+| Token limit | 6,000–8,000 TPM (too small) | 250,000 TPM (huge) |
+| Context window | 8K tokens | 1,000,000 tokens |
+| Model stability | Deprecated frequently | Long-term stable |
+| Free daily limit | Very restricted | 500 requests/day |
+| Credit card | Not needed | Not needed |
 
-## Available Models
+## Get Your FREE Gemini API Key (2 minutes)
+1. Go to **https://aistudio.google.com/apikey**
+2. Sign in with any Google account
+3. Click **"Create API key"**
+4. Copy it — starts with `AIzaSy...`
+
+## Available Models (all free)
 | Model | Best for |
-|-------|----------|
-| Llama 4 Maverick ★ | Default — latest, most capable |
-| Llama 4 Scout | Fast responses |
-| LLaMA 3.3 70B | Reliable fallback |
-| LLaMA 3.1 8B | Fastest responses |
-| Qwen QwQ 32B | Reasoning tasks |
-| Custom | Any new Groq model ID |
+|-------|---------|
+| Gemini 2.5 Flash ★ | Default — best balance |
+| Gemini 2.5 Pro | Most intelligent |
+| Gemini 2.5 Flash-Lite | Fastest responses |
 
-## Get a Free Groq API Key
-1. Go to https://console.groq.com
-2. Sign up (no credit card needed)
-3. API Keys → Create API Key → copy `gsk_...` key
-
-## GitHub Pages Deployment
+## Deploy on GitHub Pages
 Settings → Pages → Source: main / root
