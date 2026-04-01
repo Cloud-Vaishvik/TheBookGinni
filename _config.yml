@@ -1,9 +1,9 @@
-# GitHub Pages configuration for PsycheAI
+# GitHub Pages configuration for TheBookGinni
 
 theme: null
 
-title: PsycheAI
-description: An AI-powered psychology study tool that answers questions strictly from your uploaded books.
+title: TheBookGinni
+description: A universal AI-powered book assistant that answers questions strictly from your uploaded books — supports any language including Hindi, French, Spanish, Arabic, and more.
 url: ""
 
 # Serve index.html as the root page

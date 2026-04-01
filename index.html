@@ -6,8 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PsycheAI — Psychology Book Assistant</title>
-<!-- PsycheAI v6.0 | Google Gemini 2.5 Flash | Smart Multi-Book Search | March 2026 -->
+<title>TheBookGinni — Universal Book AI Assistant</title>
+<!-- TheBookGinni v1.0 | Google Gemini 2.5 Flash | Multi-Language RAG | April 2026 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,10 +15,11 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:#0a0c10; --surface:#10131a; --surface2:#181c25; --surface3:#1f2433;
+  --bg:#09090f; --surface:#0f1118; --surface2:#161921; --surface3:#1c2030;
   --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.11);
   --text:#e8e4dc; --text2:#9096a3; --text3:#555e6e;
-  --accent:#4285f4; --accent-lt:#7baaf7; --accent-glow:rgba(66,133,244,0.1);
+  --accent:#a78bfa; --accent-lt:#c4b5fd; --accent-glow:rgba(167,139,250,0.10);
+  --accent2:#f472b6; --accent3:#38bdf8;
   --green:#5ec98a; --red:#e07070; --red-bg:rgba(224,112,112,0.07); --amber:#e8b84b;
   --g-blue:#4285f4; --g-red:#ea4335; --g-yel:#fbbc04; --g-grn:#34a853;
   --radius:14px; --radius-sm:8px; --radius-xs:5px;
@@ -29,8 +30,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 /* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;z-index:10;}
 .logo{display:flex;align-items:center;gap:11px;}
-.logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4285f4,#0d47a1);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 0 18px rgba(66,133,244,0.3);}
-.logo-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;color:var(--text);line-height:1.1;}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#a78bfa,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 0 22px rgba(167,139,250,0.35);}
+.logo-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text);line-height:1.1;background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .logo-sub{font-size:9.5px;color:var(--text3);letter-spacing:.14em;text-transform:uppercase;margin-top:1px;}
 .topbar-right{display:flex;align-items:center;gap:10px;}
 .gemini-badge{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--text3);}
@@ -41,23 +42,26 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .gemini-badge strong{color:var(--accent-lt);font-weight:500;}
 .model-pill{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--text3);}
 .model-pill select{background:transparent;border:none;outline:none;color:var(--accent-lt);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;cursor:pointer;}
-.model-pill select option{background:#1f2433;color:#e8e4dc;}
+.model-pill select option{background:#1c2030;color:#e8e4dc;}
+.lang-pill{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--text3);}
+.lang-pill select{background:transparent;border:none;outline:none;color:var(--accent-lt);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;cursor:pointer;max-width:140px;}
+.lang-pill select option{background:#1c2030;color:#e8e4dc;}
 
 /* LAYOUT */
 .main{display:flex;flex:1;overflow:hidden;}
 
 /* HISTORY PANEL */
-.history-panel{width:230px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.history-panel{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
 .history-top{padding:12px 12px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.new-chat-btn{width:100%;display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(66,133,244,0.15),rgba(13,71,161,0.08));border:1px solid rgba(66,133,244,0.25);border-radius:var(--radius-sm);padding:9px 13px;color:var(--accent-lt);font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .2s;}
-.new-chat-btn:hover{background:linear-gradient(135deg,rgba(66,133,244,0.25),rgba(13,71,161,0.15));border-color:rgba(66,133,244,0.45);transform:translateY(-1px);}
+.new-chat-btn{width:100%;display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(124,58,237,0.08));border:1px solid rgba(167,139,250,0.25);border-radius:var(--radius-sm);padding:9px 13px;color:var(--accent-lt);font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .2s;}
+.new-chat-btn:hover{background:linear-gradient(135deg,rgba(167,139,250,0.25),rgba(124,58,237,0.15));border-color:rgba(167,139,250,0.45);transform:translateY(-1px);}
 .new-chat-btn svg{width:14px;height:14px;flex-shrink:0;}
 .history-label{font-size:9px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);padding:12px 14px 6px;}
 .history-list{overflow-y:auto;flex:1;padding:0 8px 10px;}
 .history-list::-webkit-scrollbar{width:3px;} .history-list::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
-.hist-item{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-bottom:2px;border:1px solid transparent;group:true;}
+.hist-item{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;margin-bottom:2px;border:1px solid transparent;}
 .hist-item:hover{background:var(--surface2);border-color:var(--border);}
-.hist-item.active{background:var(--surface3);border-color:rgba(66,133,244,0.2);}
+.hist-item.active{background:var(--surface3);border-color:rgba(167,139,250,0.2);}
 .hist-icon{font-size:13px;flex-shrink:0;}
 .hist-info{flex:1;min-width:0;}
 .hist-title{font-size:11.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
@@ -75,9 +79,9 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .s-label{font-size:9.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);margin-bottom:11px;display:flex;justify-content:space-between;align-items:center;}
 
 /* KEY SECTION */
-.key-section{background:linear-gradient(135deg,rgba(66,133,244,0.07),rgba(13,71,161,0.03));border-bottom:1px solid rgba(66,133,244,0.15)!important;}
+.key-section{background:linear-gradient(135deg,rgba(167,139,250,0.07),rgba(124,58,237,0.03));border-bottom:1px solid rgba(167,139,250,0.15)!important;}
 .key-input-wrap{display:flex;align-items:center;gap:8px;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;transition:border-color .2s;}
-.key-input-wrap:focus-within{border-color:rgba(66,133,244,0.5);}
+.key-input-wrap:focus-within{border-color:rgba(167,139,250,0.5);}
 .key-input-wrap input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',monospace;font-size:12px;letter-spacing:.03em;}
 .key-input-wrap input::placeholder{color:var(--text3);}
 .key-dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s;}
@@ -85,8 +89,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .key-hint{font-size:10px;color:var(--text3);margin-top:7px;line-height:1.7;}
 .key-hint a{color:var(--accent-lt);text-decoration:none;} .key-hint a:hover{text-decoration:underline;}
 
+/* LANGUAGE DETECT BADGE */
+.lang-detect-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:var(--radius-xs);padding:3px 8px;font-size:9.5px;color:var(--accent-lt);margin-top:6px;}
+
 /* UPLOAD */
-.upload-area{border:1.5px dashed rgba(66,133,244,0.25);border-radius:var(--radius);padding:18px 12px;text-align:center;cursor:pointer;transition:all .25s ease;background:rgba(66,133,244,0.02);}
+.upload-area{border:1.5px dashed rgba(167,139,250,0.25);border-radius:var(--radius);padding:18px 12px;text-align:center;cursor:pointer;transition:all .25s ease;background:rgba(167,139,250,0.02);}
 .upload-area:hover,.upload-area.dragging{border-color:var(--accent);background:var(--accent-glow);transform:translateY(-1px);}
 .upload-icon{font-size:26px;margin-bottom:7px;display:block;}
 .upload-text{font-size:12px;color:var(--text2);line-height:1.6;}
@@ -97,7 +104,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 /* BOOKS */
 .book-list{display:flex;flex-direction:column;gap:7px;}
 .book-item{border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);padding:9px 11px;transition:border-color .2s;}
-.book-item.processing{border-color:rgba(66,133,244,0.2);} .book-item.ready{border-color:rgba(94,201,138,0.2);} .book-item.error{border-color:rgba(224,112,112,0.2);}
+.book-item.processing{border-color:rgba(167,139,250,0.2);} .book-item.ready{border-color:rgba(94,201,138,0.2);} .book-item.error{border-color:rgba(224,112,112,0.2);}
 .book-header{display:flex;align-items:center;gap:7px;}
 .book-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .dot-processing{background:var(--accent);animation:blink 1.3s ease-in-out infinite;} .dot-ready{background:var(--green);} .dot-error{background:var(--red);}
@@ -105,9 +112,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .book-name{flex:1;font-size:11.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .book-rm{cursor:pointer;color:var(--text3);font-size:15px;line-height:1;transition:color .15s;padding:0 2px;} .book-rm:hover{color:var(--red);}
 .book-meta{font-size:9.5px;color:var(--text3);margin-top:3px;padding-left:13px;}
+.book-lang{font-size:9px;color:var(--accent-lt);background:rgba(167,139,250,0.1);border-radius:3px;padding:1px 5px;margin-left:4px;}
 .prog-wrap{margin-top:5px;padding-left:13px;}
 .prog-bar{height:2px;background:var(--surface3);border-radius:2px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(90deg,#4285f4,#0d47a1);border-radius:2px;transition:width .2s ease;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#a78bfa,#7c3aed);border-radius:2px;transition:width .2s ease;}
 .prog-txt{font-size:9.5px;color:var(--text3);margin-top:3px;}
 
 /* STATS */
@@ -128,15 +136,17 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .messages::-webkit-scrollbar{width:4px;} .messages::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
 
 /* WELCOME */
-.welcome{margin:auto;text-align:center;padding:36px 20px;max-width:500px;animation:fadeUp .55s ease both;}
+.welcome{margin:auto;text-align:center;padding:36px 20px;max-width:520px;animation:fadeUp .55s ease both;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.welcome-glyph{font-size:50px;margin-bottom:18px;display:block;animation:bob 4s ease-in-out infinite;}
+.welcome-glyph{font-size:54px;margin-bottom:18px;display:block;animation:bob 4s ease-in-out infinite;}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.welcome h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--text);margin-bottom:10px;}
+.welcome h2{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;margin-bottom:10px;background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .welcome p{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:26px;}
-.powered-by{display:inline-flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:10.5px;color:var(--text3);margin-bottom:24px;}
+.powered-by{display:inline-flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:10.5px;color:var(--text3);margin-bottom:18px;}
 .g-dots-sm{display:flex;gap:3px;}
 .powered-by strong{color:var(--accent-lt);}
+.lang-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:22px;}
+.lang-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--text2);}
 .suggestions{display:flex;flex-direction:column;gap:7px;text-align:left;}
 .sug-btn{padding:10px 15px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;cursor:pointer;text-align:left;transition:all .2s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:9px;}
 .sug-btn::before{content:'›';color:var(--accent-lt);font-size:15px;flex-shrink:0;}
@@ -147,7 +157,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .msg.user{flex-direction:row-reverse;align-self:flex-end;} .msg.assistant{align-self:flex-start;}
 .msg-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px;}
 .msg.user .msg-av{background:var(--surface3);border:1px solid var(--border2);color:var(--text2);font-size:11px;}
-.msg.assistant .msg-av{background:linear-gradient(135deg,#4285f4,#0d47a1);box-shadow:0 0 12px rgba(66,133,244,0.25);}
+.msg.assistant .msg-av{background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 0 14px rgba(167,139,250,0.3);}
 .msg-content{flex:1;min-width:0;}
 .bubble{padding:12px 17px;border-radius:var(--radius);font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;}
 .msg.user .bubble{background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-bottom-right-radius:3px;}
@@ -155,7 +165,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .bubble.no-data{background:var(--red-bg);border-color:rgba(224,112,112,.28);color:#e89090;font-style:italic;}
 .bubble.err{background:rgba(232,184,75,.06);border-color:rgba(232,184,75,.22);color:var(--amber);font-size:13px;}
 .src-row{margin-top:9px;padding-top:9px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text3);display:flex;flex-wrap:wrap;align-items:center;gap:4px;}
-.src-tag{display:inline-flex;align-items:center;background:rgba(66,133,244,.08);border:1px solid rgba(66,133,244,.18);color:var(--accent-lt);border-radius:var(--radius-xs);padding:2px 7px;font-size:9.5px;font-weight:500;}
+.src-tag{display:inline-flex;align-items:center;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.18);color:var(--accent-lt);border-radius:var(--radius-xs);padding:2px 7px;font-size:9.5px;font-weight:500;}
 
 /* TYPING */
 .typing{display:flex;gap:4px;align-items:center;padding:5px 2px;}
@@ -169,10 +179,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .h-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s;} .h-dot.on{background:var(--green);}
 .input-bar{display:flex;gap:10px;align-items:flex-end;padding:11px 22px 15px;}
 .input-wrap{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);display:flex;align-items:flex-end;padding:10px 15px;transition:border-color .2s,box-shadow .2s;gap:8px;}
-.input-wrap:focus-within{border-color:rgba(66,133,244,.45);box-shadow:0 0 0 3px rgba(66,133,244,.05);}
+.input-wrap:focus-within{border-color:rgba(167,139,250,.45);box-shadow:0 0 0 3px rgba(167,139,250,.05);}
 .input-wrap textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:13.5px;line-height:1.6;resize:none;max-height:130px;overflow-y:auto;min-height:21px;}
 .input-wrap textarea::placeholder{color:var(--text3);}
-.send-btn{width:40px;height:40px;background:linear-gradient(135deg,#4285f4,#0d47a1);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .2s,transform .15s;flex-shrink:0;box-shadow:0 0 14px rgba(66,133,244,.25);}
+.send-btn{width:40px;height:40px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .2s,transform .15s;flex-shrink:0;box-shadow:0 0 14px rgba(167,139,250,.3);}
 .send-btn:hover:not(:disabled){opacity:.85;transform:translateY(-1px);} .send-btn:active:not(:disabled){transform:scale(.93);}
 .send-btn:disabled{opacity:.2;cursor:not-allowed;box-shadow:none;}
 .send-btn svg{width:16px;height:16px;}
@@ -185,13 +195,39 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 
 <div class="topbar">
   <div class="logo">
-    <div class="logo-icon">🧠</div>
+    <div class="logo-icon">🧞</div>
     <div>
-      <div class="logo-title">PsycheAI</div>
-      <div class="logo-sub">Psychology Book Assistant</div>
+      <div class="logo-title">TheBookGinni</div>
+      <div class="logo-sub">Universal Book AI Assistant</div>
     </div>
   </div>
   <div class="topbar-right">
+    <div class="lang-pill">
+      🌐&nbsp;
+      <select id="reply-lang-select" onchange="S.replyLang=this.value;saveState()" title="Reply language">
+        <option value="auto">Auto-Detect Language</option>
+        <option value="English">English</option>
+        <option value="Hindi">Hindi (हिन्दी)</option>
+        <option value="French">French (Français)</option>
+        <option value="Spanish">Spanish (Español)</option>
+        <option value="German">German (Deutsch)</option>
+        <option value="Arabic">Arabic (العربية)</option>
+        <option value="Portuguese">Portuguese (Português)</option>
+        <option value="Chinese">Chinese (中文)</option>
+        <option value="Japanese">Japanese (日本語)</option>
+        <option value="Russian">Russian (Русский)</option>
+        <option value="Italian">Italian (Italiano)</option>
+        <option value="Bengali">Bengali (বাংলা)</option>
+        <option value="Urdu">Urdu (اردو)</option>
+        <option value="Tamil">Tamil (தமிழ்)</option>
+        <option value="Telugu">Telugu (తెలుగు)</option>
+        <option value="Marathi">Marathi (मराठी)</option>
+        <option value="Korean">Korean (한국어)</option>
+        <option value="Turkish">Turkish (Türkçe)</option>
+        <option value="Dutch">Dutch (Nederlands)</option>
+        <option value="Polish">Polish (Polski)</option>
+      </select>
+    </div>
     <div class="gemini-badge">
       <div class="g-dots"><span class="g-blue"></span><span class="g-red"></span><span class="g-yel"></span><span class="g-grn"></span></div>
       Powered by <strong>Google Gemini</strong>
@@ -237,7 +273,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
         <div class="key-hint">
           Get your free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a><br>
           ✓ No credit card &nbsp;·&nbsp; ✓ 500 requests/day free<br>
-          ✓ 1 million token context — handles large books
+          ✓ 1M token context — handles large books in any language
         </div>
       </div>
 
@@ -246,8 +282,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
         <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
           <span class="upload-icon">📚</span>
           <div class="upload-text">
-            <strong>Click to upload</strong> or drag & drop<br>Psychology PDF books
-            <small>Multiple PDFs supported</small>
+            <strong>Click to upload</strong> or drag & drop<br>Any PDF book — any language
+            <small>Hindi · French · Spanish · English · Arabic & more</small>
           </div>
         </div>
         <input type="file" id="file-input" accept=".pdf" multiple/>
@@ -255,7 +291,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 
       <div class="s-section">
         <div class="s-label">Loaded Books <span id="book-count" style="color:var(--accent-lt);font-size:9.5px;"></span></div>
-        <div id="book-list"><div class="no-books">No books loaded yet.<br>Upload PDFs to begin.</div></div>
+        <div id="book-list"><div class="no-books">No books loaded yet.<br>Upload any PDF to begin.</div></div>
       </div>
 
       <div class="s-section">
@@ -272,8 +308,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
         <div class="steps">
           <div class="step"><div class="step-n">1</div><span>Get free Gemini key from AI Studio</span></div>
           <div class="step"><div class="step-n">2</div><span>Paste key in sidebar above</span></div>
-          <div class="step"><div class="step-n">3</div><span>Upload psychology PDF books</span></div>
-          <div class="step"><div class="step-n">4</div><span>Ask any question — answers from your books only</span></div>
+          <div class="step"><div class="step-n">3</div><span>Upload any PDF book (any language)</span></div>
+          <div class="step"><div class="step-n">4</div><span>Ask in any language — select reply language above</span></div>
         </div>
       </div>
 
@@ -283,20 +319,29 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
   <div class="chat-area">
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
-        <span class="welcome-glyph">🧠</span>
-        <h2>Psychology Book AI</h2>
+        <span class="welcome-glyph">🧞</span>
+        <h2>TheBookGinni</h2>
         <div class="powered-by">
           <div class="g-dots-sm"><span class="g-blue"></span><span class="g-red"></span><span class="g-yel"></span><span class="g-grn"></span></div>
           Powered by <strong>Google Gemini 2.5 Flash</strong> · Free
         </div>
-        <p>Upload your psychology books, then ask any question.<br>
-        Every answer is <strong style="color:var(--accent-lt);">strictly grounded</strong> in your uploaded texts — no hallucination, no external knowledge.</p>
+        <p>Upload <strong>any book in any language</strong> and ask questions.<br>
+        Every answer is <strong style="color:var(--accent-lt);">strictly grounded</strong> in your uploaded texts — supports Hindi, French, Spanish, Arabic, and 15+ more languages.</p>
+        <div class="lang-pills">
+          <span class="lang-chip">🇮🇳 Hindi</span>
+          <span class="lang-chip">🇫🇷 French</span>
+          <span class="lang-chip">🇪🇸 Spanish</span>
+          <span class="lang-chip">🇸🇦 Arabic</span>
+          <span class="lang-chip">🇩🇪 German</span>
+          <span class="lang-chip">🇨🇳 Chinese</span>
+          <span class="lang-chip">🇯🇵 Japanese</span>
+          <span class="lang-chip">+ more</span>
+        </div>
         <div class="suggestions">
-          <button class="sug-btn" onclick="tryQ('What is cognitive behavioral therapy?')">What is cognitive behavioral therapy?</button>
-          <button class="sug-btn" onclick="tryQ('Explain the concept of classical conditioning')">Explain the concept of classical conditioning</button>
-          <button class="sug-btn" onclick="tryQ('What is the unconscious mind according to Freud?')">What is the unconscious mind according to Freud?</button>
-          <button class="sug-btn" onclick="tryQ(`Describe Maslow's hierarchy of needs`)">Describe Maslow's hierarchy of needs</button>
-          <button class="sug-btn" onclick="tryQ('What are defense mechanisms in psychology?')">What are defense mechanisms in psychology?</button>
+          <button class="sug-btn" onclick="tryQ('What are the main themes of this book?')">What are the main themes of this book?</button>
+          <button class="sug-btn" onclick="tryQ('Summarize the key ideas in chapter one')">Summarize the key ideas in chapter one</button>
+          <button class="sug-btn" onclick="tryQ('Who are the main characters or subjects?')">Who are the main characters or subjects?</button>
+          <button class="sug-btn" onclick="tryQ('What conclusions does the author draw?')">What conclusions does the author draw?</button>
         </div>
       </div>
     </div>
@@ -309,7 +354,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
       </div>
       <div class="input-bar">
         <div class="input-wrap">
-          <textarea id="q-input" placeholder="Ask a question from your psychology books…" rows="1"></textarea>
+          <textarea id="q-input" placeholder="Ask anything from your books — in any language…" rows="1"></textarea>
         </div>
         <button class="send-btn" id="send-btn" disabled onclick="send()" title="Send (Enter)">
           <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -324,7 +369,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-const S={books:[],history:[],loading:false,apiKey:'',model:'gemini-2.5-flash'};
+const S={books:[],history:[],loading:false,apiKey:'',model:'gemini-2.5-flash',replyLang:'auto'};
 
 // ── localStorage persistence ───────────────────────────────────────────────────
 function saveState(){
@@ -332,23 +377,23 @@ function saveState(){
     const toSave={
       apiKey: S.apiKey,
       model:  S.model,
+      replyLang: S.replyLang,
       history: S.history,
       sessionId: S.sessionId,
       sessionTimestamp: S.sessionTimestamp,
       books: S.books.filter(b=>b.status==='ready').map(b=>({
-        name:b.name, text:b.text, pages:b.pages, wc:b.wc, status:'ready'
+        name:b.name, text:b.text, pages:b.pages, wc:b.wc, status:'ready', detectedLang:b.detectedLang||''
       }))
     };
-    localStorage.setItem('psycheai_state', JSON.stringify(toSave));
+    localStorage.setItem('bookginni_state', JSON.stringify(toSave));
   }catch(e){
-    // Storage might be full (large books) — fail silently
-    console.warn('PsycheAI: Could not save to localStorage:', e.message);
+    console.warn('TheBookGinni: Could not save to localStorage:', e.message);
   }
 }
 
 function loadState(){
   try{
-    const raw=localStorage.getItem('psycheai_state');
+    const raw=localStorage.getItem('bookginni_state');
     if(!raw) return;
     const saved=JSON.parse(raw);
     if(saved.sessionId){ S.sessionId=saved.sessionId; S.sessionTimestamp=saved.sessionTimestamp; }
@@ -363,11 +408,14 @@ function loadState(){
       S.model=saved.model;
       document.getElementById('model-select').value=saved.model;
     }
+    if(saved.replyLang){
+      S.replyLang=saved.replyLang;
+      document.getElementById('reply-lang-select').value=saved.replyLang;
+    }
     if(saved.history?.length) S.history=saved.history;
     if(saved.books?.length){
       S.books=saved.books;
       renderBooks();
-      // Restore chat history messages to UI
       if(S.history.length){
         const wel=document.getElementById('welcome');if(wel)wel.remove();
         document.getElementById('clear-btn').style.display='inline-flex';
@@ -380,7 +428,7 @@ function loadState(){
       }
     }
   }catch(e){
-    console.warn('PsycheAI: Could not restore state:', e.message);
+    console.warn('TheBookGinni: Could not restore state:', e.message);
   }
 }
 
@@ -393,22 +441,21 @@ function addAssistMsgSilent(txt){
   const noData=/^no data found/i.test(txt.trim()),isErr=txt.startsWith('[Error]');
   const cls=noData?'bubble no-data':isErr?'bubble err':'bubble';
   const c=document.getElementById('messages'),d=document.createElement('div');d.className='msg assistant';
-  d.innerHTML=`<div class="msg-av">🧠</div><div class="msg-content"><div class="${cls}">${esc(txt)}</div></div>`;
+  d.innerHTML=`<div class="msg-av">🧞</div><div class="msg-content"><div class="${cls}">${esc(txt)}</div></div>`;
   c.appendChild(d);
 }
-// ──────────────────────────────────────────────────────────────────────────────
 
 // ── Session / Chat History Management ─────────────────────────────────────────
 function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
 function getSessions(){
-  try{ return JSON.parse(localStorage.getItem('psycheai_sessions')||'[]'); }
+  try{ return JSON.parse(localStorage.getItem('bookginni_sessions')||'[]'); }
   catch(e){ return []; }
 }
 
 function saveSessions(sessions){
-  try{ localStorage.setItem('psycheai_sessions', JSON.stringify(sessions)); }
-  catch(e){ console.warn('PsycheAI: Could not save sessions:', e.message); }
+  try{ localStorage.setItem('bookginni_sessions', JSON.stringify(sessions)); }
+  catch(e){ console.warn('TheBookGinni: Could not save sessions:', e.message); }
 }
 
 function renderHistoryPanel(){
@@ -449,26 +496,26 @@ function saveCurrentSession(){
 }
 
 function newChat(){
-  // Save current session first
   saveCurrentSession();
-  // Reset state
   S.history=[];
   S.sessionId=genId();
   S.sessionTimestamp=Date.now();
-  // Clear UI
   const c=document.getElementById('messages');
   c.innerHTML='';
   document.getElementById('clear-btn').style.display='none';
   const w=document.createElement('div');w.className='welcome';w.id='welcome';
-  w.innerHTML=`<span class="welcome-glyph">🧠</span><h2>Psychology Book AI</h2>
+  w.innerHTML=`<span class="welcome-glyph">🧞</span><h2>TheBookGinni</h2>
     <div class="powered-by"><div class="g-dots-sm"><span class="g-blue"></span><span class="g-red"></span><span class="g-yel"></span><span class="g-grn"></span></div>Powered by <strong>Google Gemini 2.5 Flash</strong> · Free</div>
-    <p>Upload your psychology books, then ask any question.<br>Every answer is <strong style="color:var(--accent-lt);">strictly grounded</strong> in your uploaded texts.</p>
+    <p>Upload <strong>any book in any language</strong> and ask questions.<br>Every answer is <strong style="color:var(--accent-lt);">strictly grounded</strong> in your uploaded texts.</p>
+    <div class="lang-pills">
+      <span class="lang-chip">🇮🇳 Hindi</span><span class="lang-chip">🇫🇷 French</span><span class="lang-chip">🇪🇸 Spanish</span>
+      <span class="lang-chip">🇸🇦 Arabic</span><span class="lang-chip">🇩🇪 German</span><span class="lang-chip">+ more</span>
+    </div>
     <div class="suggestions">
-      <button class="sug-btn" onclick="tryQ('What is cognitive behavioral therapy?')">What is cognitive behavioral therapy?</button>
-      <button class="sug-btn" onclick="tryQ('Explain the concept of classical conditioning')">Explain the concept of classical conditioning</button>
-      <button class="sug-btn" onclick="tryQ('What is the unconscious mind according to Freud?')">What is the unconscious mind according to Freud?</button>
-      <button class="sug-btn" onclick="tryQ(\`Describe Maslow's hierarchy of needs\`)">Describe Maslow's hierarchy of needs</button>
-      <button class="sug-btn" onclick="tryQ('What are defense mechanisms in psychology?')">What are defense mechanisms in psychology?</button>
+      <button class="sug-btn" onclick="tryQ('What are the main themes of this book?')">What are the main themes of this book?</button>
+      <button class="sug-btn" onclick="tryQ('Summarize the key ideas in chapter one')">Summarize the key ideas in chapter one</button>
+      <button class="sug-btn" onclick="tryQ('Who are the main characters or subjects?')">Who are the main characters or subjects?</button>
+      <button class="sug-btn" onclick="tryQ('What conclusions does the author draw?')">What conclusions does the author draw?</button>
     </div>`;
   c.appendChild(w);
   renderHistoryPanel();
@@ -477,7 +524,6 @@ function newChat(){
 
 function loadSession(id){
   if(id===S.sessionId) return;
-  // Save current first
   saveCurrentSession();
   const sessions=getSessions();
   const sess=sessions.find(s=>s.id===id);
@@ -485,7 +531,6 @@ function loadSession(id){
   S.history=sess.history;
   S.sessionId=sess.id;
   S.sessionTimestamp=sess.timestamp;
-  // Rebuild chat UI
   const c=document.getElementById('messages');
   c.innerHTML='';
   document.getElementById('clear-btn').style.display='inline-flex';
@@ -505,7 +550,6 @@ function deleteSession(e, id){
   if(id===S.sessionId) newChat();
   else renderHistoryPanel();
 }
-// ──────────────────────────────────────────────────────────────────────────────
 
 function onKeyInput(){
   const v=document.getElementById('gemini-key').value.trim();
@@ -522,8 +566,8 @@ function updateUI(){
   document.getElementById('send-btn').disabled=!hasKey||!hasBooks||S.loading;
   const dot=document.getElementById('h-dot'),txt=document.getElementById('h-txt');
   if(!hasKey){dot.className='h-dot';txt.textContent='Get your free key at aistudio.google.com';}
-  else if(!hasBooks){dot.className='h-dot';txt.textContent='Upload at least one psychology PDF.';}
-  else{dot.className='h-dot on';txt.textContent='Ready — answers grounded strictly in your books.';}
+  else if(!hasBooks){dot.className='h-dot';txt.textContent='Upload at least one PDF book to begin.';}
+  else{dot.className='h-dot on';txt.textContent='Ready — answers strictly grounded in your books.';}
   const r=S.books.filter(b=>b.status==='ready');
   document.getElementById('st-books').textContent=r.length;
   document.getElementById('st-pages').textContent=r.reduce((s,b)=>s+(b.pages||0),0).toLocaleString();
@@ -534,19 +578,42 @@ function updateUI(){
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+// ── Language detection (heuristic, based on script/character presence) ─────────
+function detectBookLanguage(text) {
+  const sample = text.slice(0, 3000);
+  const devanagari = (sample.match(/[\u0900-\u097F]/g)||[]).length;
+  const arabic = (sample.match(/[\u0600-\u06FF]/g)||[]).length;
+  const chinese = (sample.match(/[\u4E00-\u9FFF]/g)||[]).length;
+  const japanese = (sample.match(/[\u3040-\u30FF]/g)||[]).length;
+  const korean = (sample.match(/[\uAC00-\uD7AF]/g)||[]).length;
+  const cyrillic = (sample.match(/[\u0400-\u04FF]/g)||[]).length;
+  const latin = (sample.match(/[a-zA-Z]/g)||[]).length;
+  const total = devanagari+arabic+chinese+japanese+korean+cyrillic+latin;
+  if(!total) return 'Unknown';
+  const pct = c => Math.round(c/total*100);
+  if(pct(devanagari)>20) return 'Hindi/Devanagari';
+  if(pct(arabic)>20) return 'Arabic/Urdu';
+  if(pct(chinese)>15) return 'Chinese';
+  if(pct(japanese)>10) return 'Japanese';
+  if(pct(korean)>10) return 'Korean';
+  if(pct(cyrillic)>15) return 'Russian/Cyrillic';
+  return 'Latin-script';
+}
+
 function renderBooks(){
   const c=document.getElementById('book-list');
-  if(!S.books.length){c.innerHTML='<div class="no-books">No books loaded yet.<br>Upload PDFs to begin.</div>';return;}
+  if(!S.books.length){c.innerHTML='<div class="no-books">No books loaded yet.<br>Upload any PDF to begin.</div>';return;}
   c.innerHTML='<div class="book-list">'+S.books.map((b,i)=>`
     <div class="book-item ${b.status}">
       <div class="book-header">
         <div class="book-dot dot-${b.status}"></div>
         <div class="book-name" title="${esc(b.name)}">${esc(b.name)}</div>
+        ${b.detectedLang?`<span class="book-lang">${esc(b.detectedLang)}</span>`:''}
         <span class="book-rm" onclick="rmBook(${i})">×</span>
       </div>
       ${b.status==='processing'?`<div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="pb-${i}" style="width:${b.prog||0}%"></div></div><div class="prog-txt" id="pt-${i}">${b.ptxt||'Starting…'}</div></div>`:
-        b.status==='ready'?`<div class="book-meta">${b.pages} pages · ${Math.round(b.wc/1000)}k words</div>`:
-        `<div class="book-meta" style="color:var(--red);">Error: ${esc(b.err||'Unknown')}</div>`}
+      b.status==='ready'?`<div class="book-meta">${b.pages} pages · ${Math.round(b.wc/1000)}k words</div>`:
+      `<div class="book-meta" style="color:var(--red);">Error: ${esc(b.err||'Unknown')}</div>`}
     </div>`).join('')+'</div>';
 }
 
@@ -566,6 +633,7 @@ async function extractPdf(file,i){
   for(let p=1;p<=tot;p++){
     const pg=await pdf.getPage(p);
     const ct=await pg.getTextContent();
+    // Preserve unicode characters for multilingual support
     text+=ct.items.map(x=>x.str).join(' ')+'\n';
     S.books[i].prog=Math.round(p/tot*100);
     S.books[i].ptxt=`Page ${p} of ${tot}`;
@@ -578,11 +646,14 @@ async function handleFiles(files){
   for(const f of files){
     if(!f.name.toLowerCase().endsWith('.pdf')){alert(`"${f.name}" is not a PDF.`);continue;}
     const i=S.books.length;
-    S.books.push({name:f.name,text:'',pages:0,wc:0,status:'processing',prog:0,ptxt:'Loading…'});
+    S.books.push({name:f.name,text:'',pages:0,wc:0,status:'processing',prog:0,ptxt:'Loading…',detectedLang:''});
     renderBooks();updateUI();
     try{
       const t=await extractPdf(f,i);
-      S.books[i].text=t; S.books[i].wc=t.split(/\s+/).filter(Boolean).length; S.books[i].status='ready';
+      S.books[i].text=t;
+      S.books[i].wc=t.split(/\s+/).filter(Boolean).length;
+      S.books[i].status='ready';
+      S.books[i].detectedLang=detectBookLanguage(t);
     }catch(e){S.books[i].status='error';S.books[i].err=e.message;}
     renderBooks();updateUI();saveState();
   }
@@ -607,7 +678,7 @@ function addUserMsg(txt){
 function addTyping(){
   rmWelcome();
   const c=document.getElementById('messages'),d=document.createElement('div');d.className='msg assistant';d.id='typing';
-  d.innerHTML=`<div class="msg-av">🧠</div><div class="msg-content"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  d.innerHTML=`<div class="msg-av">🧞</div><div class="msg-content"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
   c.appendChild(d);scrollBot();
 }
 
@@ -618,27 +689,8 @@ function addAssistMsg(text,books){
   const cls=noData?'bubble no-data':isErr?'bubble err':'bubble';
   const srcs=(!noData&&!isErr&&books?.length)?`<div class="src-row"><span>Sources: </span>${books.map(n=>`<span class="src-tag">${esc(n.length>28?n.slice(0,26)+'…':n)}</span>`).join('')}</div>`:'';
   const c=document.getElementById('messages'),d=document.createElement('div');d.className='msg assistant';
-  d.innerHTML=`<div class="msg-av">🧠</div><div class="msg-content"><div class="${cls}">${esc(text)}${srcs}</div></div>`;
+  d.innerHTML=`<div class="msg-av">🧞</div><div class="msg-content"><div class="${cls}">${esc(text)}${srcs}</div></div>`;
   c.appendChild(d);scrollBot();
-}
-
-function clearChat(){
-  S.history=[];
-  saveState();
-  const c=document.getElementById('messages');c.innerHTML='';
-  document.getElementById('clear-btn').style.display='none';
-  const w=document.createElement('div');w.className='welcome';w.id='welcome';
-  w.innerHTML=`<span class="welcome-glyph">🧠</span><h2>Psychology Book AI</h2>
-    <div class="powered-by"><div class="g-dots-sm"><span class="g-blue"></span><span class="g-red"></span><span class="g-yel"></span><span class="g-grn"></span></div>Powered by <strong>Google Gemini 2.5 Flash</strong> · Free</div>
-    <p>Upload your psychology books, then ask any question.<br>Every answer is <strong style="color:var(--accent-lt);">strictly grounded</strong> in your uploaded texts.</p>
-    <div class="suggestions">
-      <button class="sug-btn" onclick="tryQ('What is cognitive behavioral therapy?')">What is cognitive behavioral therapy?</button>
-      <button class="sug-btn" onclick="tryQ('Explain the concept of classical conditioning')">Explain the concept of classical conditioning</button>
-      <button class="sug-btn" onclick="tryQ('What is the unconscious mind according to Freud?')">What is the unconscious mind according to Freud?</button>
-      <button class="sug-btn" onclick="tryQ(\`Describe Maslow's hierarchy of needs\`)">Describe Maslow's hierarchy of needs</button>
-      <button class="sug-btn" onclick="tryQ('What are defense mechanisms in psychology?')">What are defense mechanisms in psychology?</button>
-    </div>`;
-  c.appendChild(w);
 }
 
 function tryQ(q){document.getElementById('q-input').value=q;send();}
@@ -647,28 +699,60 @@ const ta=document.getElementById('q-input');
 ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,130)+'px';});
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
 
-// ── Smart relevance search across ALL books ────────────────────────────────────
-// Splits each book into chunks, scores each chunk against the question keywords,
-// picks the top-scoring chunks from EVERY book so all 12 books are represented.
+// ── Smart RAG: multi-language relevance search across ALL books ────────────────
+// Handles Unicode keywords for non-Latin scripts (Hindi, Arabic, Chinese, etc.)
 function buildSmartContext(question, books) {
   const CHUNK_SIZE   = 1500;   // chars per chunk (~375 tokens)
   const CHUNKS_PER_BOOK = 8;   // top chunks taken from each book
-  const MAX_CTX      = 700000; // total char budget (~175k tokens, well within 1M)
+  const MAX_CTX      = 700000; // total char budget (~175k tokens)
 
-  // Extract keywords from question (ignore stop words)
-  const stopWords = new Set(['what','is','the','a','an','of','in','how','does','do','are','was','were','be','been','being','have','has','had','that','this','with','for','on','at','by','from','to','and','or','but','not','it','its','as','so','if','which','who','when','where','why','can','could','would','should','will','their','there','about','explain','describe','define','tell','me']);
-  const keywords = question.toLowerCase()
-    .replace(/[^a-z0-9\s]/g,'')
-    .split(/\s+/)
-    .filter(w => w.length > 2 && !stopWords.has(w));
+  // Multilingual stop words (Latin-script only; CJK/Arabic/Devanagari have no spaces so we keep all tokens)
+  const stopWords = new Set([
+    // English
+    'what','is','the','a','an','of','in','how','does','do','are','was','were','be','been','being',
+    'have','has','had','that','this','with','for','on','at','by','from','to','and','or','but','not',
+    'it','its','as','so','if','which','who','when','where','why','can','could','would','should','will',
+    'their','there','about','explain','describe','define','tell','me',
+    // Hindi common stop words (transliterated)
+    'kya','hai','ka','ki','ke','aur','mein','se','ko','par','ek','yeh','woh','kaise','kab','kyun',
+    // French common
+    'le','la','les','de','du','des','et','en','un','une','est','que','qui','dans','sur','pour',
+    // Spanish common
+    'el','ella','los','las','del','al','es','un','una','en','por','para','con','que','como',
+    // German common
+    'der','die','das','ein','eine','ist','und','in','zu','von','mit','auf','für','auch'
+  ]);
 
-  // Score a text chunk: count keyword hits (with bonus for multiple hits of same word)
+  // Extract keywords: supports Unicode (non-Latin scripts keep all tokens)
+  function extractKeywords(text) {
+    // For CJK: split by char pairs/triplets since no spaces
+    const cjkPattern = /[\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF]/;
+    if(cjkPattern.test(text)) {
+      // Extract all CJK character sequences as individual tokens
+      const cjkTokens = text.match(/[\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF]+/g)||[];
+      const latinTokens = text.toLowerCase().match(/[a-z]{3,}/g)||[];
+      return [...new Set([...cjkTokens.map(t=>t.slice(0,4)), ...latinTokens.filter(w=>!stopWords.has(w))])];
+    }
+    // For Arabic/Devanagari/Cyrillic + Latin
+    return text
+      .split(/[\s\n\r\t،,،،。！？!?.]+/)
+      .map(w=>w.replace(/^[^\w\u0080-\uFFFF]+|[^\w\u0080-\uFFFF]+$/g,''))
+      .filter(w=>w.length>1 && !stopWords.has(w.toLowerCase()));
+  }
+
+  const keywords = extractKeywords(question);
+
+  // Score a text chunk: count keyword hits (Unicode-aware, case-insensitive for Latin)
   function scoreChunk(text) {
     const lower = text.toLowerCase();
     let score = 0;
     for (const kw of keywords) {
+      const kwLower = kw.toLowerCase();
       let pos = 0, hits = 0;
-      while ((pos = lower.indexOf(kw, pos)) !== -1) { hits++; pos += kw.length; }
+      // Search in original text for non-Latin, lowercased for Latin
+      const searchIn = /[\u0080-\uFFFF]/.test(kw) ? text : lower;
+      const searchKw = /[\u0080-\uFFFF]/.test(kw) ? kw : kwLower;
+      while ((pos = searchIn.indexOf(searchKw, pos)) !== -1) { hits++; pos += searchKw.length; }
       score += hits > 0 ? 1 + Math.log(hits) : 0;
     }
     return score;
@@ -679,28 +763,23 @@ function buildSmartContext(question, books) {
   for (const book of books) {
     const text   = book.text;
     const chunks = [];
-    // Split into overlapping chunks (50% overlap so context isn't cut mid-sentence)
     for (let i = 0; i < text.length; i += Math.floor(CHUNK_SIZE / 2)) {
       const chunk = text.slice(i, i + CHUNK_SIZE);
-      if (chunk.trim().length > 100) chunks.push(chunk);
+      if (chunk.trim().length > 80) chunks.push(chunk); // lower threshold for CJK (char-dense)
     }
-    // Score and sort chunks for this book
     const scored = chunks.map(c => ({ bookName: book.name, chunk: c, score: scoreChunk(c) }));
     scored.sort((a, b) => b.score - a.score);
-    // Take top N chunks from this book (always include at least 1 even if score=0)
     const top = scored.slice(0, CHUNKS_PER_BOOK).filter((c,i) => i===0 || c.score > 0);
     allChunks.push(...top);
   }
 
-  // Sort all collected chunks by score globally
   allChunks.sort((a, b) => b.score - a.score);
 
-  // Build context respecting char budget — ensure every book that scored > 0 appears
   let ctx = '';
   const used = new Set();
   const usedList = [];
 
-  // First pass: include at least 1 chunk per book that has any relevant content
+  // First pass: include at least 1 chunk per book that has relevant content
   for (const book of books) {
     const bookChunks = allChunks.filter(c => c.bookName === book.name && c.score > 0);
     if (bookChunks.length === 0) continue;
@@ -713,10 +792,10 @@ function buildSmartContext(question, books) {
     }
   }
 
-  // Second pass: fill remaining budget with highest-scoring chunks from any book
+  // Second pass: fill remaining budget with highest-scoring chunks
   for (const item of allChunks) {
     if (ctx.length >= MAX_CTX) break;
-    if (item.score === 0) break; // no point including zero-score chunks
+    if (item.score === 0) break;
     const sep = `\n\n--- (more from: ${item.bookName}) ---\n`;
     if (ctx.length + sep.length + item.chunk.length <= MAX_CTX) {
       ctx += sep + item.chunk;
@@ -724,7 +803,7 @@ function buildSmartContext(question, books) {
     }
   }
 
-  // Fallback: if nothing scored (very generic question), take a sample from every book
+  // Fallback: if nothing scored (very generic question), sample from every book
   if (usedList.length === 0) {
     const PER_BOOK = Math.floor(MAX_CTX / books.length);
     for (const book of books) {
@@ -743,7 +822,6 @@ async function send(){
   const ready=S.books.filter(b=>b.status==='ready');
   if(!question||S.loading||!ready.length)return;
 
-  // Smart context: relevant chunks from ALL books
   const { ctx, used } = buildSmartContext(question, ready);
 
   S.loading=true;
@@ -751,12 +829,29 @@ async function send(){
   ta.value='';ta.style.height='auto';
   addUserMsg(question);addTyping();
 
-  const systemInstruction=`You are PsycheAI, a strict psychology knowledge assistant. You ONLY answer using the book text provided below.
+  // Build language instruction
+  const bookLangs=[...new Set(ready.map(b=>b.detectedLang).filter(Boolean))];
+  const langNote = bookLangs.length ? `The uploaded books contain text in: ${bookLangs.join(', ')}.` : '';
+
+  let replyLangInstruction = '';
+  if(S.replyLang === 'auto'){
+    replyLangInstruction = 'Detect the language the user asked in and reply in that same language. If the book text is in a different language, translate the relevant passages to match the user\'s language.';
+  } else {
+    replyLangInstruction = `Always reply in ${S.replyLang}, regardless of the language used in the question or books.`;
+  }
+
+  const systemInstruction=`You are TheBookGinni, a universal book knowledge assistant. You ONLY answer using the book text provided below. You support ALL languages — books in Hindi, French, Spanish, Arabic, Chinese, and any other language are all valid sources.
+
+MULTILINGUAL SUPPORT:
+- ${langNote}
+- ${replyLangInstruction}
+- You can read and understand text in any language or script.
+- When quoting from non-English books, you may quote in the original language and then translate if needed.
 
 STRICT ANTI-HALLUCINATION RULES:
 RULE 1 — Answer ONLY from the provided book text. Do NOT use your training knowledge or any external information.
-RULE 2 — If the topic is NOT found in the book text, respond EXACTLY: "No data found"
-RULE 3 — Verify key terms from the question exist in the text. If absent: "No data found"
+RULE 2 — If the topic is NOT found in the book text, respond EXACTLY with: "No data found" (in the appropriate reply language).
+RULE 3 — Verify key terms from the question exist in the text. If absent: "No data found".
 RULE 4 — No inference, extrapolation, or gap-filling from your own knowledge.
 RULE 5 — For partial info: answer what is found, then note "This is all the information found in the uploaded books."
 RULE 6 — You may quote passages directly from the text.
@@ -765,7 +860,6 @@ RULE 6 — You may quote passages directly from the text.
 ${ctx}
 ================ END OF BOOK TEXT ================`;
 
-  // Build conversation in Gemini format
   const geminiContents=[];
   for(const m of S.history.slice(-20)){
     geminiContents.push({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]});
@@ -781,7 +875,7 @@ ${ctx}
       body:JSON.stringify({
         system_instruction:{parts:[{text:systemInstruction}]},
         contents:geminiContents,
-        generationConfig:{temperature:0.1,maxOutputTokens:1500,topP:0.8}
+        generationConfig:{temperature:0.1,maxOutputTokens:2000,topP:0.85}
       })
     });
     const data=await res.json();
@@ -808,7 +902,6 @@ ${ctx}
 }
 
 loadState();
-// Init session if none active
 if(!S.sessionId){ S.sessionId=genId(); S.sessionTimestamp=Date.now(); }
 renderHistoryPanel();
 updateUI();
