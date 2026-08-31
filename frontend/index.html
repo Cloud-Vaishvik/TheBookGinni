@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TheBookGinni — Universal Book AI Assistant</title>
+<!-- TheBookGinni v1.0 | Google Gemini 2.5 Flash | Multi-Language RAG | April 2026 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f5f0;--card:#fff;--ink:#20201e;--muted:#77756f;--line:#e8e4dc;--accent:#7b6bb1;--accent2:#a996d1;--soft:#f0ecf7;--shadow:0 12px 35px rgba(48,41,70,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",sans-serif}button,input{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:flex;flex-direction:column}.topbar{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:14px;background:var(--soft);display:grid;place-items:center;font-size:23px}.brand h1{font:600 25px "Playfair Display",serif;margin:0}.brand span{font-size:11px;color:var(--muted);display:block;margin-top:1px}.top-actions{display:flex;align-items:center;gap:14px}.lang{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;color:#4f4d48}.gemini{font-size:12px;color:#666}.model{font-size:12px;background:var(--soft);padding:8px 10px;border-radius:10px;color:#5c4e86}.layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 76px)}.sidebar{border-right:1px solid var(--line);background:#fbfaf7;padding:22px 18px;display:flex;flex-direction:column}.new-chat{border:0;background:var(--ink);color:#fff;border-radius:12px;padding:12px 15px;font-weight:600}.side-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:26px 8px 10px}.history{display:flex;flex-direction:column;gap:5px}.history button{border:0;background:transparent;text-align:left;padding:10px 9px;border-radius:9px;color:#555}.history button:hover{background:#f0eee8}.main{display:flex;justify-content:center;padding:40px 28px}.content{width:min(920px,100%)}.hero{text-align:center;padding:35px 20px 24px}.hero h2{font:600 clamp(32px,5vw,52px) "Playfair Display",serif;margin:0 0 12px}.hero p{color:var(--muted);max-width:650px;margin:0 auto;line-height:1.65}.upload-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow);margin:10px 0 22px}.upload-row{display:flex;gap:12px;align-items:center}.file-label{border:1px dashed #c9c2b5;border-radius:12px;padding:14px 16px;flex:1;color:#6d695f;background:#fcfbf8}.upload-btn{border:0;background:var(--accent);color:#fff;padding:13px 18px;border-radius:11px;font-weight:600}.book-info{display:none;margin-top:15px;padding:13px;background:var(--soft);border-radius:11px;font-size:13px}.chat{display:flex;flex-direction:column;gap:15px}.message{max-width:82%;padding:15px 17px;border-radius:16px;line-height:1.6}.message.user{margin-left:auto;background:var(--ink);color:#fff;border-bottom-right-radius:5px}.message.ai{background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px}.sources{margin-top:10px;font-size:12px;color:var(--muted)}.composer{position:sticky;bottom:16px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px;display:flex;gap:8px;box-shadow:var(--shadow);margin-top:20px}.composer input{border:0;outline:0;flex:1;padding:11px}.send{border:0;background:var(--accent);color:#fff;border-radius:11px;padding:10px 18px}.status{font-size:12px;color:var(--muted);text-align:center;margin:10px}.status.online{color:#4f7d5a}.status.error{color:#a34f4f}@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{display:none}.topbar{padding:0 15px}.gemini{display:none}.main{padding:25px 15px}.upload-row{flex-direction:column}.file-label,.upload-btn{width:100%}.message{max-width:92%}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">📚</div><div><h1>TheBookGinni</h1><span>Universal Book AI Assistant</span></div></div>
+  <div class="top-actions">
+    <select id="language" class="lang" aria-label="Language"><option>Auto-Detect Language</option><option>English</option><option>Hindi</option><option>French</option><option>Spanish</option><option>German</option><option>Arabic</option><option>Bengali</option><option>Uzbek</option></select>
+    <span class="gemini">Powered by Google Gemini</span><span class="model">Model: Gemini 2.5 Flash ★</span>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar"><button class="new-chat" id="newChat">＋ New Chat</button><div class="side-title">Chat History</div><div class="history" id="history"></div></aside>
+  <main class="main"><div class="content">
+    <section class="hero"><h2>Read. Ask. Understand.</h2><p>Upload a book and have a grounded conversation with its contents. Ask questions in your language and get answers with relevant page sources.</p></section>
+    <section class="upload-card"><div class="upload-row"><label class="file-label" for="pdf">Choose a PDF book</label><input id="pdf" type="file" accept="application/pdf" hidden/><button class="upload-btn" id="uploadBtn">Upload Book</button></div><div class="book-info" id="bookInfo"></div></section>
+    <div class="status" id="status">Checking backend…</div>
+    <section class="chat" id="chat"></section>
+    <form class="composer" id="composer"><input id="question" autocomplete="off" placeholder="Ask something about your book…"/><button class="send" type="submit">Send</button></form>
+  </div></main>
+</div></div>
+<script>
+const API_BASE_URL="http://127.0.0.1:8000";
+const $=id=>document.getElementById(id);
+let state={backend:false,book:null,history:[]};
+function setStatus(ok,msg){state.backend=ok;$('status').textContent=msg|| (ok?'Backend online':'Backend offline');$('status').className='status '+(ok?'online':'error');}
+async function checkBackend(){try{const r=await fetch(API_BASE_URL+'/health');if(!r.ok)throw new Error();await r.json();setStatus(true,'Backend online');}catch(e){setStatus(false,'Backend offline — start FastAPI on port 8000.');}}
+function addMessage(text,type,sources=[]){const el=document.createElement('div');el.className='message '+type;el.innerHTML=text.replace(/\n/g,'<br>');if(sources.length){const s=document.createElement('div');s.className='sources';s.textContent='Sources: '+sources.map(x=>'Page '+x.page).join(', ');el.appendChild(s)}$('chat').appendChild(el);$('chat').scrollTop=$('chat').scrollHeight;}
+function addHistory(q){state.history.unshift(q);state.history=state.history.slice(0,12);$('history').innerHTML='';state.history.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>{$('question').value=q};$('history').appendChild(b)})}
+$('pdf').addEventListener('change',()=>{const f=$('pdf').files[0];if(f)$('uploadBtn').textContent='Upload '+(f.name.length>22?f.name.slice(0,19)+'…':f.name)});
+$('uploadBtn').addEventListener('click',async()=>{const f=$('pdf').files[0];if(!f){alert('Please choose a PDF first.');return}const fd=new FormData();fd.append('file',f);$('uploadBtn').disabled=true;$('uploadBtn').textContent='Processing…';try{const r=await fetch(API_BASE_URL+'/upload',{method:'POST',body:fd});const data=await r.json();if(!r.ok)throw new Error(data.detail||'Upload failed');state.book=data;$('bookInfo').style.display='block';$('bookInfo').textContent=`${data.book} • ${data.pages} pages • ${data.chunks} chunks`;$('status').textContent='Book ready — ask your question.';setStatus(true,'Book ready — ask your question.')}catch(e){setStatus(false,e.message)}finally{$('uploadBtn').disabled=false;$('uploadBtn').textContent='Upload Book'}});
+$('composer').addEventListener('submit',async e=>{e.preventDefault();const q=$('question').value.trim();if(!q)return;if(!state.book){alert('Please upload a book first.');return}addMessage(q,'user');addHistory(q);$('question').value='';const loading=document.createElement('div');loading.className='message ai';loading.textContent='Thinking…';$('chat').appendChild(loading);try{const r=await fetch(API_BASE_URL+'/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,top_k:5})});const data=await r.json();if(!r.ok)throw new Error(data.detail||'Request failed');loading.remove();addMessage(data.answer,'ai',data.sources||[])}catch(e){loading.remove();addMessage('Sorry, something went wrong: '+e.message,'ai')}});
+$('newChat').addEventListener('click',()=>{$('chat').innerHTML='';state.history=[];$('history').innerHTML='';});
+checkBackend();
+</script>
+</body>
+</html>
